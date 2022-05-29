@@ -153,6 +153,5 @@ namespace ProjectRetina.Algorithms
 
             return IntArrayToBitmap(originalArray);
         }
-
     }
 }

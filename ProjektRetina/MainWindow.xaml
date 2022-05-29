@@ -7,11 +7,12 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        
+        <StackPanel Grid.Column="0" VerticalAlignment="Center">
             <StackPanel Orientation="Horizontal">
                 <Label>Gray scale: </Label>
                 <ComboBox x:Name="GrayScaleComboBox">
@@ -22,19 +23,29 @@
                 </ComboBox>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Grid.Row="1">
+            <StackPanel Orientation="Horizontal" Grid.Column="0">
                 <Label>Blur: </Label>
                 <ComboBox x:Name="BlurComboBox">
-                    <ComboBoxItem>Box Blur</ComboBoxItem>
-                    <ComboBoxItem IsSelected="True">Gaussian Blur</ComboBoxItem>
+                    <ComboBoxItem IsSelected="True">Box Blur</ComboBoxItem>
+                    <ComboBoxItem>Gaussian Blur</ComboBoxItem>
                 </ComboBox>
             </StackPanel>
 
+            <StackPanel Orientation="Horizontal">
+                <Label>Filter: </Label>
+                <ComboBox>
+                    <ComboBoxItem IsSelected="True">Median</ComboBoxItem>
+                    <ComboBoxItem>Another</ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
 
-            <Button x:Name="ChooseFile" Margin="40" Click="ChooseFile_Click" >Load Image</Button>
+            <Button x:Name="SourceFolderButton" Click="SourceFolderButton_Click">Source folder</Button>
+            <Button x:Name="DestinationFolderButton">Destination folder</Button>
+            
+            <Button x:Name="ChooseFile" Margin="5" Click="ChooseFile_Click" >Load Image</Button>
         
         </StackPanel>
-            
-        <Image x:Name="Image" Grid.Row="1"></Image>
+
+        <Image x:Name="Image" Grid.Column="1"/>
     </Grid>
 </Window>

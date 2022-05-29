@@ -40,12 +40,37 @@ namespace ProjectRetina
                 Source = openFileDialog.FileName;
                 OriginalBitmap = new Bitmap(Source);
 
-                Bitmap GrayScaleBitmap = GrayScale.Scale(OriginalBitmap, GrayScaleComboBox.SelectedIndex);
-                FinalBitmap = Utility.ImageSubstraction(GrayScaleBitmap, Filter.BoxBlurFilter(GrayScaleBitmap));
-                FinalBitmap = Binaryzation.OtsuBinarization(FinalBitmap);
-
+                FinalBitmap = Filter.MedianFilter(OriginalBitmap);
                 Image.Source = Utility.BitmapToImageSource(FinalBitmap);
+                //Image.Source = Utility.BitmapToImageSource(OriginalBitmap);
+                //MessageBox.Show("xD");
+
+                //Bitmap GrayScaleBitmap = GrayScale.Scale(OriginalBitmap, GrayScaleComboBox.SelectedIndex);
+                //Image.Source = Utility.BitmapToImageSource(GrayScaleBitmap);
+                //MessageBox.Show("xD");
+
+                //Image.Source = Utility.BitmapToImageSource(Filter.BoxBlurFilter(GrayScaleBitmap, 7));
+                //MessageBox.Show("xD");
+
+                //FinalBitmap = Utility.ImageSubstraction(GrayScaleBitmap, Filter.BoxBlurFilter(GrayScaleBitmap));
+                //Image.Source = Utility.BitmapToImageSource(FinalBitmap);
+                //MessageBox.Show("xD");
+
+                //FinalBitmap = Binaryzation.OtsuBinarization(FinalBitmap);
+                //Image.Source = Utility.BitmapToImageSource(FinalBitmap);
+
+                //MessageBox.Show("xD");
+                //FinalBitmap = Filter.MedianFilter(FinalBitmap);
+                //Image.Source = Utility.BitmapToImageSource(FinalBitmap);
+
+                //MessageBox.Show("xD");
+                //FinalBitmap = Filter.MaxMinFilter(FinalBitmap, 3, true);
+                //Image.Source = Utility.BitmapToImageSource(FinalBitmap);
             }
+        }
+
+        private void SourceFolderButton_Click(object sender, RoutedEventArgs e)
+        {
         }
     }
 }
