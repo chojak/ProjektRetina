@@ -127,7 +127,7 @@ namespace ProjectRetina
             return Utility.IntArrayToBitmap(resultArray);
         }
 
-        public static Bitmap MedianFilter(Bitmap bmp, int range = 21)
+        public static Bitmap MedianFilter(Bitmap bmp, int range = 7)
         {
             if (bmp == null)
             {
@@ -151,7 +151,7 @@ namespace ProjectRetina
                         {
                             if (xx >= 0 && xx < intArray.GetLength(0) && yy >= 0 && yy < intArray.GetLength(1))
                             {
-                                median.Add(intArray[xx, y]);
+                                median.Add(intArray[xx, yy]);
                             }
                         }
                     }
