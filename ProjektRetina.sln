@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32421.90
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjektRetina", "ProjektRetina\ProjektRetina.csproj", "{0CBFB02B-F82E-4C57-9BB6-52AAE8F0BF5D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0CBFB02B-F82E-4C57-9BB6-52AAE8F0BF5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CBFB02B-F82E-4C57-9BB6-52AAE8F0BF5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CBFB02B-F82E-4C57-9BB6-52AAE8F0BF5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CBFB02B-F82E-4C57-9BB6-52AAE8F0BF5D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E260B6BA-3170-4978-AB33-6D544D25E17F}
+	EndGlobalSection
+EndGlobal
