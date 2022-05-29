@@ -1,12 +1,40 @@
-﻿<Window x:Class="ProjektRetina.MainWindow"
+﻿<Window x:Class="ProjectRetina.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ProjektRetina"
+        xmlns:local="clr-namespace:ProjectRetina"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0">
+            <StackPanel Orientation="Horizontal">
+                <Label>Gray scale: </Label>
+                <ComboBox x:Name="GrayScaleComboBox">
+                    <ComboBoxItem IsSelected="True">Mean</ComboBoxItem>
+                    <ComboBoxItem>Red</ComboBoxItem>
+                    <ComboBoxItem>Green</ComboBoxItem>
+                    <ComboBoxItem>Blue</ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
 
+            <StackPanel Orientation="Horizontal" Grid.Row="1">
+                <Label>Blur: </Label>
+                <ComboBox x:Name="BlurComboBox">
+                    <ComboBoxItem>Box Blur</ComboBoxItem>
+                    <ComboBoxItem IsSelected="True">Gaussian Blur</ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
+
+
+            <Button x:Name="ChooseFile" Margin="40" Click="ChooseFile_Click" >Load Image</Button>
+        
+        </StackPanel>
+            
+        <Image x:Name="Image" Grid.Row="1"></Image>
     </Grid>
 </Window>
