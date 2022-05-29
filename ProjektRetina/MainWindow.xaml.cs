@@ -150,15 +150,14 @@ namespace ProjectRetina
 
         private void AllFilesButton_Click(object sender, RoutedEventArgs e)
         {
-            int counter = 0;
-            ProgressBar.Maximum = FileNames.Count;
+            //int counter = 0;
+            //ProgressBar.Maximum = FileNames.Count;
             foreach (var file in FileNames)
             {
-                counter++;
-                ProgressBar.Value = (double)counter;
-                ProgressTextBlock.Text = $"{counter}/{FileNames.Count} ({Math.Round((decimal)(counter/FileNames.Count) * 100)})%";
-                MessageBox.Show("xD");
-                //TransformImage(file).Save(DestinationDirectory + '\\' + System.IO.Path.GetFileName(file));
+                //counter++;
+                //ProgressBar.Value = (double)counter;
+                //ProgressTextBlock.Text = $"{counter}/{FileNames.Count} ({Math.Round((decimal)(counter/FileNames.Count) * 100)})%";
+                TransformImage(file).Save(DestinationDirectory + '\\' + System.IO.Path.GetFileName(file));
             }
         }
 
