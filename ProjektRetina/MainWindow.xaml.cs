@@ -40,8 +40,11 @@ namespace ProjectRetina
                 Source = openFileDialog.FileName;
                 OriginalBitmap = new Bitmap(Source);
 
-                FinalBitmap = GrayScale.Scale(OriginalBitmap, GrayScaleComboBox.SelectedIndex);
-                Image.Source = Utilities.BitmapToImageSource(FinalBitmap);
+                Bitmap GrayScaleBitmap = GrayScale.Scale(OriginalBitmap, GrayScaleComboBox.SelectedIndex);
+                FinalBitmap = Utility.ImageSubstraction(GrayScaleBitmap, Filter.BoxBlurFilter(GrayScaleBitmap));
+                FinalBitmap = Binaryzation.OtsuBinarization(FinalBitmap);
+
+                Image.Source = Utility.BitmapToImageSource(FinalBitmap);
             }
         }
     }

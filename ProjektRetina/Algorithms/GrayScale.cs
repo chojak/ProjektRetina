@@ -32,9 +32,6 @@ namespace ProjectRetina.Algorithms
                 byte b = bmpData[i + 2];
                 byte mean = (byte)((r + g + b) / 3);
 
-                //if (g == 255)
-                    //MessageBox.Show("XD");
-
                 if (option == 0)
                 {
                     bmpData[i + 0] = bmpData[i + 1] = bmpData[i + 2] = mean;
