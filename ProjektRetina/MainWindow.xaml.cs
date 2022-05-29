@@ -25,10 +25,14 @@ namespace ProjectRetina
     public partial class MainWindow : Window
     {
         string Source;
+
+        string SourceDirectory;
+        string DestinationDirectory;
+        List<string> FileNames;
+
         Bitmap OriginalBitmap;
         Bitmap FinalBitmap;
-        int RangeForLinearFilters;
-        List<string> FileNames;
+        int RangeForLinearFilters = 3;
         public MainWindow()
         {
             InitializeComponent();
@@ -71,6 +75,22 @@ namespace ProjectRetina
             }
         }
 
+        private Bitmap TransformImage(string path)
+        {
+            Bitmap ImageToTransform = new Bitmap(path);
+
+            Bitmap GrayScaleBitmap = GrayScale.Scale(ImageToTransform, GrayScaleComboBox.SelectedIndex);
+
+            GrayScaleBitmap = Utility.ImageSubstraction(GrayScaleBitmap, Filter.BoxBlurFilter(GrayScaleBitmap, RangeForLinearFilters));
+
+            GrayScaleBitmap  = Binaryzation.OtsuBinarization(GrayScaleBitmap);
+            GrayScaleBitmap = Filter.MedianFilter(GrayScaleBitmap, RangeForLinearFilters);
+            
+            GrayScaleBitmap = Filter.MaxMinFilter(GrayScaleBitmap, RangeForLinearFilters, 
+                MorphologyComboBox.SelectedValue.ToString() == "Min");
+
+            return GrayScaleBitmap; 
+        }
         private void SourceFolderButton_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.FolderBrowserDialog folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
@@ -80,21 +100,87 @@ namespace ProjectRetina
                 if (Directory.Exists(folderBrowserDialog.SelectedPath))
                 {
                     FileNames = Directory.EnumerateFiles(folderBrowserDialog.SelectedPath)
-                        .Where(file =>  file.EndsWith(".jpg") || 
-                                file.EndsWith(".jpeg") || 
-                                file.EndsWith(".png") || 
-                                file.EndsWith(".gif") || 
+                        .Where(file => file.EndsWith(".jpg") ||
+                                file.EndsWith(".jpeg") ||
+                                file.EndsWith(".png") ||
+                                file.EndsWith(".gif") ||
                                 file.EndsWith(".tif"))
                         .ToList();
+
+                    System.Diagnostics.Debug.WriteLine(FileNames.Count().ToString());
                     if (FileNames.Count == 0)
                     {
                         MessageBox.Show("Could not find any files", "Alert");
+                        return;
                     }
+                    SourceDirectoryTextBlock.Text = SourceDirectory = folderBrowserDialog.SelectedPath;
+                    AllFilesButton.IsEnabled = DestinationDirectory != null && SourceDirectory != null ? true : false;
                 }
                 else
                 {
-                    MessageBox.Show("Could not find any files", "Alert");
+                    MessageBox.Show("Wrong folder, select another one", "Alert");
+                    return;
                 }
+            }
+        }
+
+        private void DestinationFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.FolderBrowserDialog folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            var result = folderBrowserDialog.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                if (Directory.Exists(folderBrowserDialog.SelectedPath))
+                {
+                    //if (Directory.EnumerateFiles(folderBrowserDialog.SelectedPath).Any())
+                    //{
+                    //    MessageBox.Show("Destination folder must be empty!", "Alert");
+                    //    return;
+                    //}
+                    DestinationDirectoryTextBlock.Text = DestinationDirectory = folderBrowserDialog.SelectedPath;
+                    AllFilesButton.IsEnabled = DestinationDirectory != null && SourceDirectory != null ? true : false;
+                }
+                else
+                {
+                    MessageBox.Show("Wrong folder, select another one", "Alert");
+                    return;
+                }
+            }
+        }
+
+        private void AllFilesButton_Click(object sender, RoutedEventArgs e)
+        {
+            int counter = 0;
+            ProgressBar.Maximum = FileNames.Count;
+            foreach (var file in FileNames)
+            {
+                counter++;
+                ProgressBar.Value = (double)counter;
+                ProgressTextBlock.Text = $"{counter}/{FileNames.Count} ({Math.Round((decimal)(counter/FileNames.Count) * 100)})%";
+                MessageBox.Show("xD");
+                //TransformImage(file).Save(DestinationDirectory + '\\' + System.IO.Path.GetFileName(file));
+            }
+        }
+
+        private void RangeTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            int range;
+            if (int.TryParse(RangeTextBox.Text, out range))
+            {
+                if (range > 0 && range <= 50)
+                {
+                    RangeForLinearFilters = range;
+                }
+                else
+                {
+                    MessageBox.Show("Range value must be between 0 and 50", "Invalid range value", MessageBoxButton.OK, MessageBoxImage.Error);
+                    RangeTextBox.Text = RangeForLinearFilters.ToString();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Range value can be only integer", "Invalid range value", MessageBoxButton.OK, MessageBoxImage.Error);
+                RangeTextBox.Text = RangeForLinearFilters.ToString();
             }
         }
     }

@@ -13,7 +13,7 @@
         </Grid.ColumnDefinitions>
         
         <StackPanel Grid.Column="0" VerticalAlignment="Center">
-            <StackPanel Orientation="Horizontal">
+            <DockPanel LastChildFill="True">
                 <Label>Gray scale: </Label>
                 <ComboBox x:Name="GrayScaleComboBox">
                     <ComboBoxItem IsSelected="True">Mean</ComboBoxItem>
@@ -21,26 +21,63 @@
                     <ComboBoxItem>Green</ComboBoxItem>
                     <ComboBoxItem>Blue</ComboBoxItem>
                 </ComboBox>
-            </StackPanel>
+            </DockPanel>
 
-            <StackPanel Orientation="Horizontal" Grid.Column="0">
+            <DockPanel LastChildFill="True">
                 <Label>Blur: </Label>
                 <ComboBox x:Name="BlurComboBox">
                     <ComboBoxItem IsSelected="True">Box Blur</ComboBoxItem>
                     <ComboBoxItem>Gaussian Blur</ComboBoxItem>
                 </ComboBox>
-            </StackPanel>
+            </DockPanel>
 
-            <StackPanel Orientation="Horizontal">
+            <DockPanel LastChildFill="True">
                 <Label>Filter: </Label>
                 <ComboBox>
                     <ComboBoxItem IsSelected="True">Median</ComboBoxItem>
                     <ComboBoxItem>Another</ComboBoxItem>
                 </ComboBox>
+            </DockPanel>
+
+            <DockPanel LastChildFill="True">
+                <Label>Morphology: </Label>
+                <ComboBox x:Name="MorphologyComboBox">
+                    <ComboBoxItem>Zamkniety</ComboBoxItem>
+                    <ComboBoxItem>Domkniety</ComboBoxItem>
+                    <ComboBoxItem>Min</ComboBoxItem>
+                    <ComboBoxItem IsSelected="True">Max</ComboBoxItem> 
+                </ComboBox>
+            </DockPanel>
+
+            <DockPanel LastChildFill="True">
+                <Label>Range: </Label>
+                <TextBox x:Name="RangeTextBox" TextChanged="RangeTextBox_TextChanged">3</TextBox>
+            </DockPanel>
+
+            <StackPanel>
+                <Button x:Name="SourceFolderButton" Click="SourceFolderButton_Click">Source folder</Button>
+                <StackPanel Orientation="Horizontal">
+                    <Label>Source directory:</Label>
+                    <TextBlock x:Name="SourceDirectoryTextBlock" VerticalAlignment="Center"></TextBlock> 
+                </StackPanel>
             </StackPanel>
 
-            <Button x:Name="SourceFolderButton" Click="SourceFolderButton_Click">Source folder</Button>
-            <Button x:Name="DestinationFolderButton">Destination folder</Button>
+            <StackPanel>
+                <Button x:Name="DestinationFolderButton" Click="DestinationFolderButton_Click">Destination folder</Button>
+                <StackPanel Orientation="Horizontal">
+                    <Label>Destination directory:</Label>
+                    <TextBlock x:Name="DestinationDirectoryTextBlock" VerticalAlignment="Center"></TextBlock>
+                </StackPanel>
+            </StackPanel>
+
+            <Button x:Name="AllFilesButton" IsEnabled="False" Click="AllFilesButton_Click">Full-Auto :D</Button>
+
+            <ProgressBar x:Name="ProgressBar" Height="15"></ProgressBar>
+
+            <StackPanel Orientation="Horizontal">
+                <Label>Progress: </Label>
+                <TextBlock x:Name="ProgressTextBlock"></TextBlock>
+            </StackPanel>
             
             <Button x:Name="ChooseFile" Margin="5" Click="ChooseFile_Click" >Load Image</Button>
         
