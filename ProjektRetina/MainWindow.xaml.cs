@@ -42,6 +42,10 @@ namespace ProjectRetina
         public MainWindow()
         {
             InitializeComponent();
+
+            ThreadPool.GetAvailableThreads(out int workers, out int io);
+            System.Diagnostics.Debug.WriteLine($"workers: {workers}, io: {io}");
+
         }
 
         private void ChooseFile_Click(object sender, RoutedEventArgs e)
@@ -113,7 +117,6 @@ namespace ProjectRetina
                                 file.EndsWith(".tif"))
                         .ToList();
 
-                    System.Diagnostics.Debug.WriteLine(FileNames.Count().ToString());
                     if (FileNames.Count == 0)
                     {
                         MessageBox.Show("Could not find any files", "Alert");
@@ -172,6 +175,7 @@ namespace ProjectRetina
             Counter = 0;
             ProgressBar.Maximum = FileNames.Count;
 
+            
             foreach (string file in FileNames)
             {
                 ThreadPool.QueueUserWorkItem(obj => ProcessImage(file)); 
