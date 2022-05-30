@@ -42,6 +42,9 @@ namespace ProjectRetina
         public MainWindow()
         {
             InitializeComponent();
+
+            Filter.GausFilter(new Bitmap(1, 1));
+            Filter.GausFilter(new Bitmap(1, 1));
         }
 
         private void ChooseFile_Click(object sender, RoutedEventArgs e)
