@@ -16,6 +16,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Threading;
+using System.Diagnostics;
 
 namespace ProjectRetina
 {
@@ -30,9 +32,13 @@ namespace ProjectRetina
         string DestinationDirectory;
         List<string> FileNames;
 
+        int GrayscaleOption = 0;
+        bool IsMin = false;
+        int RangeForLinearFilters = 3;
+        int Counter = 0;
+
         Bitmap OriginalBitmap;
         Bitmap FinalBitmap;
-        int RangeForLinearFilters = 3;
         public MainWindow()
         {
             InitializeComponent();
@@ -79,15 +85,15 @@ namespace ProjectRetina
         {
             Bitmap ImageToTransform = new Bitmap(path);
 
-            Bitmap GrayScaleBitmap = GrayScale.Scale(ImageToTransform, GrayScaleComboBox.SelectedIndex);
+            Bitmap GrayScaleBitmap = GrayScale.Scale(ImageToTransform, GrayscaleOption);
+
 
             GrayScaleBitmap = Utility.ImageSubstraction(GrayScaleBitmap, Filter.BoxBlurFilter(GrayScaleBitmap, RangeForLinearFilters));
 
             GrayScaleBitmap  = Binaryzation.OtsuBinarization(GrayScaleBitmap);
             GrayScaleBitmap = Filter.MedianFilter(GrayScaleBitmap, RangeForLinearFilters);
             
-            GrayScaleBitmap = Filter.MaxMinFilter(GrayScaleBitmap, RangeForLinearFilters, 
-                MorphologyComboBox.SelectedValue.ToString() == "Min");
+            GrayScaleBitmap = Filter.MaxMinFilter(GrayScaleBitmap, RangeForLinearFilters, IsMin);
 
             return GrayScaleBitmap; 
         }
@@ -148,16 +154,27 @@ namespace ProjectRetina
             }
         }
 
+        private void ProcessImage(object obj)
+        {
+            TransformImage(obj.ToString()).Save(DestinationDirectory + '\\' + System.IO.Path.GetFileName(obj.ToString()));
+
+            Counter++;
+
+            this.Dispatcher.Invoke(() =>
+            {
+                ProgressBar.Value = (double)Counter;
+                ProgressTextBlock.Text = $"{Counter}/{FileNames.Count} ({Math.Round((decimal)Counter/FileNames.Count * 100, 2)}%)";
+            });
+        }
+
         private void AllFilesButton_Click(object sender, RoutedEventArgs e)
         {
-            //int counter = 0;
-            //ProgressBar.Maximum = FileNames.Count;
-            foreach (var file in FileNames)
+            Counter = 0;
+            ProgressBar.Maximum = FileNames.Count;
+
+            foreach (string file in FileNames)
             {
-                //counter++;
-                //ProgressBar.Value = (double)counter;
-                //ProgressTextBlock.Text = $"{counter}/{FileNames.Count} ({Math.Round((decimal)(counter/FileNames.Count) * 100)})%";
-                TransformImage(file).Save(DestinationDirectory + '\\' + System.IO.Path.GetFileName(file));
+                ThreadPool.QueueUserWorkItem(obj => ProcessImage(file)); 
             }
         }
 
@@ -181,6 +198,19 @@ namespace ProjectRetina
                 MessageBox.Show("Range value can be only integer", "Invalid range value", MessageBoxButton.OK, MessageBoxImage.Error);
                 RangeTextBox.Text = RangeForLinearFilters.ToString();
             }
+        }
+
+        private void MorphologyComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (MorphologyComboBox.SelectedValue == "Min")
+                IsMin = true;
+            else
+                IsMin = false;
+        }
+
+        private void GrayScaleComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            GrayscaleOption = GrayScaleComboBox.SelectedIndex;
         }
     }
 }

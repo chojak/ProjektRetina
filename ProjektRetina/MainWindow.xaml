@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ProjectRetina"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="MainWindow" Height="450" Width="800"
+        >
+    <Grid x:Name="grid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition/>
@@ -15,7 +16,7 @@
         <StackPanel Grid.Column="0" VerticalAlignment="Center">
             <DockPanel LastChildFill="True">
                 <Label>Gray scale: </Label>
-                <ComboBox x:Name="GrayScaleComboBox">
+                <ComboBox x:Name="GrayScaleComboBox" SelectionChanged="GrayScaleComboBox_SelectionChanged">
                     <ComboBoxItem IsSelected="True">Mean</ComboBoxItem>
                     <ComboBoxItem>Red</ComboBoxItem>
                     <ComboBoxItem>Green</ComboBoxItem>
@@ -41,7 +42,7 @@
 
             <DockPanel LastChildFill="True">
                 <Label>Morphology: </Label>
-                <ComboBox x:Name="MorphologyComboBox">
+                <ComboBox x:Name="MorphologyComboBox" SelectionChanged="MorphologyComboBox_SelectionChanged">
                     <ComboBoxItem>Zamkniety</ComboBoxItem>
                     <ComboBoxItem>Domkniety</ComboBoxItem>
                     <ComboBoxItem>Min</ComboBoxItem>
