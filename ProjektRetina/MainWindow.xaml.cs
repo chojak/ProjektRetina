@@ -46,6 +46,9 @@ namespace ProjectRetina
             ThreadPool.GetAvailableThreads(out int workers, out int io);
             System.Diagnostics.Debug.WriteLine($"workers: {workers}, io: {io}");
 
+
+            Filter.GausFilter(new Bitmap(1, 1));
+            Filter.GausFilter(new Bitmap(1, 1));
         }
 
         private void ChooseFile_Click(object sender, RoutedEventArgs e)
@@ -175,7 +178,6 @@ namespace ProjectRetina
             Counter = 0;
             ProgressBar.Maximum = FileNames.Count;
 
-            
             foreach (string file in FileNames)
             {
                 ThreadPool.QueueUserWorkItem(obj => ProcessImage(file)); 

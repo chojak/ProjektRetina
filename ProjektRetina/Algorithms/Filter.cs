@@ -12,7 +12,42 @@ namespace ProjectRetina
     internal class Filter
     {
         public static int[,] matrixX = new int[,] { { 1, 2, 1, }, { 2, 4, 2, }, { 1, 2, 1, } };
+        public static int[,] gaussianMatrix;
 
+        private static int[,] generateGaussian(int range = 5, double sd = 1)
+        {
+            int[,] matrix = new int[range, range];
+            double[,] gaussian = new double[range, range];
+            range /= 2;
+            double total = 0;
+            double min = double.MaxValue;
+            double max = 0;
+
+            for (int y = -range; y <= range; y++)
+            {
+                for (int x = -range; x <= range; x++)
+                {
+                    // https://homepages.inf.ed.ac.uk/rbf/HIPR2/gsmooth.htm
+
+                    gaussian[x + range, y + range] = 1 / (2 * Math.PI * sd * sd) * Math.Pow(Math.E, -(x * x + y * y / (2 * sd * sd)));
+                    total += gaussian[x + range, y + range];
+                    min = Math.Min(min, gaussian[x + range, y + range]);
+                    max = Math.Max(max, gaussian[x + range, y + range]);
+                }
+            }
+            total /= (range * range);
+
+            for (int y = -range; y <= range; y++)
+            {
+                for (int x = -range; x <= range; x++)
+                {
+                    // https://homepages.inf.ed.ac.uk/rbf/HIPR2/gsmooth.htm
+
+                    double z = (gaussian[x + range, y + range] - min) / (max - min);
+                }
+            }
+            return matrix;
+        }
         public static Bitmap GausFilter(Bitmap bmp)
         {
             if (bmp == null)
@@ -20,6 +55,12 @@ namespace ProjectRetina
                 return new Bitmap(1, 1);
             }
 
+            if (gaussianMatrix == null)
+            {
+                gaussianMatrix = generateGaussian();
+                System.Diagnostics.Debug.WriteLine("nigger");
+            }
+            
             int[,] byteArray = Utility.ImageTo2DIntArray(bmp);
             int[,] resultArray = new int[byteArray.GetLength(0), byteArray.GetLength(1)];
 
