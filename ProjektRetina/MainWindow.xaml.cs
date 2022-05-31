@@ -18,73 +18,153 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Threading;
 using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace ProjectRetina
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+
+    public class Options
+    {
+        public Options()
+        {
+        }
+        public Options(int GrayscaleOption, int BlurOption, int RangeFilters, int NoiceReductionOption, int MorphologicalOption)
+        {
+            this.GrayscaleOption = GrayscaleOption;
+            this.BlurOption = BlurOption;
+            this.RangeFilters = RangeFilters;
+            this.NoiceReductionOption = NoiceReductionOption;
+            this.MorphologicalOption = MorphologicalOption;
+        }
+        public int GrayscaleOption;
+        public int BlurOption;
+        public int RangeFilters;
+        public int NoiceReductionOption;
+        public int MorphologicalOption;
+    }
     public partial class MainWindow : Window
     {
         string Source;
-
         string SourceDirectory;
         string DestinationDirectory;
         List<string> FileNames;
 
         int GrayscaleOption = 0;
-        bool IsMin = false;
-        int RangeForLinearFilters = 3;
-        int Counter = 0;
+        int BlurOption = 0;
+        int RangeFilters = 3;
+        int NoiceReductionOption = 0;
+        int MorphologicalOption = 0;
 
+
+        int Counter = 0;
         Bitmap OriginalBitmap;
         Bitmap FinalBitmap;
+        Bitmap tmp;
+
         public MainWindow()
         {
             InitializeComponent();
 
-            ThreadPool.GetAvailableThreads(out int workers, out int io);
-            System.Diagnostics.Debug.WriteLine($"workers: {workers}, io: {io}");
+            //ThreadPool.SetMinThreads(8, 2);
+            //ThreadPool.SetMaxThreads(8, 2);
+        }
 
+        private void SaveConfig_Click(object sender, RoutedEventArgs e)
+        {
+            Utility.SaveConfig(GrayscaleOption, BlurOption, RangeFilters, NoiceReductionOption, MorphologicalOption);
+        }
 
-            Filter.GausFilter(new Bitmap(1, 1));
-            Filter.GausFilter(new Bitmap(1, 1));
+        private void LoadConfig_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Title = "Choose config file";
+            openFileDialog.Filter = "JSON files|*.json";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                string json = File.ReadAllText(openFileDialog.FileName);
+                Options options = JsonConvert.DeserializeObject<Options>(json);
+
+                GrayScaleComboBox.SelectedIndex = GrayscaleOption = options.GrayscaleOption;
+
+                BlurComboBox.SelectedIndex = BlurOption = options.BlurOption;
+
+                RangeFilters = options.RangeFilters;
+                RangeTextBox.Text = RangeFilters.ToString();
+
+                NoiceReductionComboBox.SelectedIndex = NoiceReductionOption = options.NoiceReductionOption;
+
+                MorphologyComboBox.SelectedIndex =  MorphologicalOption = options.MorphologicalOption;
+            }
         }
 
         private void ChooseFile_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Title = "Choose an image";
             openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.gif;*.tif;...";
             if (openFileDialog.ShowDialog() == true)
             {
                 Source = openFileDialog.FileName;
                 OriginalBitmap = new Bitmap(Source);
-                RangeForLinearFilters = 3;
 
                 Image.Source = Utility.BitmapToImageSource(OriginalBitmap);
-                MessageBox.Show("xD");
+                MessageBox.Show("Original bitmap ");
 
                 Bitmap GrayScaleBitmap = GrayScale.Scale(OriginalBitmap, GrayScaleComboBox.SelectedIndex);
                 Image.Source = Utility.BitmapToImageSource(GrayScaleBitmap);
-                MessageBox.Show("xD");
+                MessageBox.Show($"Grayscale for {GrayScaleComboBox.SelectedValue.ToString().Split(' ')[GrayScaleComboBox.SelectedValue.ToString().Split(' ').Length - 1]} channel");
 
-                Image.Source = Utility.BitmapToImageSource(Filter.BoxBlurFilter(GrayScaleBitmap, RangeForLinearFilters));
-                MessageBox.Show("xD");
-                
-                FinalBitmap = Utility.ImageSubstraction(GrayScaleBitmap, Filter.BoxBlurFilter(GrayScaleBitmap, RangeForLinearFilters));
+                if (BlurComboBox.SelectedIndex == 0)
+                {
+                    tmp = Filter.GaussBlurFilter(GrayScaleBitmap, RangeFilters);
+                    Image.Source = Utility.BitmapToImageSource(tmp);
+                    MessageBox.Show("Gauss blur");
+                }
+                //else
+                //{
+                //    tmp = Filter.BoxBlurFilter(GrayScaleBitmap, RangeFilters);
+                //    Image.Source = Utility.BitmapToImageSource(tmp);
+                //    MessageBox.Show("BoxBlur blur");
+                //}
+
+                FinalBitmap = Utility.ImageSubstraction(GrayScaleBitmap, tmp);
                 Image.Source = Utility.BitmapToImageSource(FinalBitmap);
-                MessageBox.Show("xD");
-                
+                MessageBox.Show("Image substraction");
+
                 FinalBitmap = Binaryzation.OtsuBinarization(FinalBitmap);
                 Image.Source = Utility.BitmapToImageSource(FinalBitmap);
+                MessageBox.Show("Otsu binarization");
 
-                MessageBox.Show("xD");
-                FinalBitmap = Filter.MedianFilter(FinalBitmap, RangeForLinearFilters);
-                Image.Source = Utility.BitmapToImageSource(FinalBitmap);
+                if (NoiceReductionComboBox.SelectedIndex == 0)
+                {
+                    FinalBitmap = Filter.MedianFilter(FinalBitmap, RangeFilters);
+                    Image.Source = Utility.BitmapToImageSource(FinalBitmap);
+                    MessageBox.Show("Median filter");
+                }
+                else
+                {
+                    // another filter removing noices
+                    MessageBox.Show("NIE MA XD");
+                }
 
-                MessageBox.Show("xD");
-                FinalBitmap = Filter.MaxMinFilter(FinalBitmap, RangeForLinearFilters, false);
-                Image.Source = Utility.BitmapToImageSource(FinalBitmap);
+                if (MorphologyComboBox.SelectedIndex == 3)
+                {
+                    // max
+                    FinalBitmap = Filter.MaxMinFilter(FinalBitmap, RangeFilters, false);
+                    Image.Source = Utility.BitmapToImageSource(FinalBitmap);
+                    MessageBox.Show("Max filter");
+
+                }
+                else if (MorphologyComboBox.SelectedIndex == 2)
+                {
+                    // min
+                    FinalBitmap = Filter.MaxMinFilter(FinalBitmap, RangeFilters, true);
+                    Image.Source = Utility.BitmapToImageSource(FinalBitmap);
+                    MessageBox.Show("Min/Max filter");
+                }
             }
         }
 
@@ -92,18 +172,31 @@ namespace ProjectRetina
         {
             Bitmap ImageToTransform = new Bitmap(path);
 
-            Bitmap GrayScaleBitmap = GrayScale.Scale(ImageToTransform, GrayscaleOption);
+            Bitmap FinalBitmap = GrayScale.Scale(ImageToTransform, GrayscaleOption);
 
+            if (BlurOption == 0)
+                FinalBitmap = Utility.ImageSubstraction(FinalBitmap, Filter.GaussBlurFilter(FinalBitmap, RangeFilters));
+            else if (BlurOption == 1)
+                FinalBitmap = Utility.ImageSubstraction(FinalBitmap, Filter.BoxBlurFilter(FinalBitmap, RangeFilters));
 
-            GrayScaleBitmap = Utility.ImageSubstraction(GrayScaleBitmap, Filter.BoxBlurFilter(GrayScaleBitmap, RangeForLinearFilters));
-
-            GrayScaleBitmap  = Binaryzation.OtsuBinarization(GrayScaleBitmap);
-            GrayScaleBitmap = Filter.MedianFilter(GrayScaleBitmap, RangeForLinearFilters);
+            FinalBitmap = Binaryzation.OtsuBinarization(FinalBitmap);
             
-            GrayScaleBitmap = Filter.MaxMinFilter(GrayScaleBitmap, RangeForLinearFilters, IsMin);
+            if (NoiceReductionOption == 0)
+                FinalBitmap = Filter.MedianFilter(FinalBitmap, RangeFilters);
+            else if (NoiceReductionOption == 1)
+            {
+                // jakis inny filtr
+                MessageBox.Show("NIE MA XD");
+            }
 
-            return GrayScaleBitmap; 
+            if (MorphologicalOption == 3)
+                FinalBitmap = Filter.MaxMinFilter(FinalBitmap, RangeFilters, false); // max
+            else if (MorphologicalOption == 2)
+                FinalBitmap = Filter.MaxMinFilter(FinalBitmap, RangeFilters, true);  // min
+
+            return FinalBitmap; 
         }
+
         private void SourceFolderButton_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.FolderBrowserDialog folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
@@ -144,11 +237,6 @@ namespace ProjectRetina
             {
                 if (Directory.Exists(folderBrowserDialog.SelectedPath))
                 {
-                    //if (Directory.EnumerateFiles(folderBrowserDialog.SelectedPath).Any())
-                    //{
-                    //    MessageBox.Show("Destination folder must be empty!", "Alert");
-                    //    return;
-                    //}
                     DestinationDirectoryTextBlock.Text = DestinationDirectory = folderBrowserDialog.SelectedPath;
                     AllFilesButton.IsEnabled = DestinationDirectory != null && SourceDirectory != null ? true : false;
                 }
@@ -184,39 +272,48 @@ namespace ProjectRetina
             }
         }
 
-        private void RangeTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        private void RangeTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             int range;
             if (int.TryParse(RangeTextBox.Text, out range))
             {
                 if (range > 0 && range <= 50)
                 {
-                    RangeForLinearFilters = range;
+                    RangeFilters = range;
+                    Filter.generateGaussian(RangeFilters);
                 }
                 else
                 {
                     MessageBox.Show("Range value must be between 0 and 50", "Invalid range value", MessageBoxButton.OK, MessageBoxImage.Error);
-                    RangeTextBox.Text = RangeForLinearFilters.ToString();
+                    RangeTextBox.Text = RangeFilters.ToString();
                 }
             }
             else
             {
                 MessageBox.Show("Range value can be only integer", "Invalid range value", MessageBoxButton.OK, MessageBoxImage.Error);
-                RangeTextBox.Text = RangeForLinearFilters.ToString();
+                RangeTextBox.Text = RangeFilters.ToString();
             }
         }
 
         private void MorphologyComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (MorphologyComboBox.SelectedValue == "Min")
-                IsMin = true;
-            else
-                IsMin = false;
+            MorphologicalOption = MorphologyComboBox.SelectedIndex;
         }
 
         private void GrayScaleComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             GrayscaleOption = GrayScaleComboBox.SelectedIndex;
         }
+
+        private void BlurComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            BlurOption = BlurComboBox.SelectedIndex;
+        }
+
+        private void NoiceReductionComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            NoiceReductionOption = NoiceReductionComboBox.SelectedIndex;
+        }
+
     }
 }

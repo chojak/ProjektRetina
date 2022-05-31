@@ -8,6 +8,9 @@ using System.Windows.Media.Imaging;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using System.Windows;
+using System.Text.Json;
+using Newtonsoft.Json;
 
 namespace ProjectRetina.Algorithms
 {
@@ -153,5 +156,27 @@ namespace ProjectRetina.Algorithms
 
             return IntArrayToBitmap(originalArray);
         }
+
+        public static void SaveConfig(int GrayscaleOption, int BlurOption, int RangeFilters, int NoiceReductionOption, int MorphologicalOption)
+        {
+            Options options = new Options(GrayscaleOption, BlurOption, RangeFilters, NoiceReductionOption, MorphologicalOption);
+            string json = JsonConvert.SerializeObject(options);
+
+            System.Windows.Forms.FolderBrowserDialog folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            var result = folderBrowserDialog.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                if (Directory.Exists(folderBrowserDialog.SelectedPath))
+                {
+                    File.WriteAllText($"{folderBrowserDialog.SelectedPath}/retina_config.json", json);
+                }
+                else
+                {
+                    MessageBox.Show("Wrong folder, select another one", "Alert");
+                    return;
+                }
+            }
+        }
+
     }
 }

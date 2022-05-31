@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
         >
-    <Grid x:Name="grid">
+    <Grid x:Name="grid" Focusable="True">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition/>
@@ -26,15 +26,15 @@
 
             <DockPanel LastChildFill="True">
                 <Label>Blur: </Label>
-                <ComboBox x:Name="BlurComboBox">
-                    <ComboBoxItem IsSelected="True">Box Blur</ComboBoxItem>
-                    <ComboBoxItem>Gaussian Blur</ComboBoxItem>
+                <ComboBox x:Name="BlurComboBox" SelectionChanged="BlurComboBox_SelectionChanged">
+                    <ComboBoxItem IsSelected="True">Gaussian Blur</ComboBoxItem>
+                    <ComboBoxItem>Box Blur</ComboBoxItem>
                 </ComboBox>
             </DockPanel>
 
             <DockPanel LastChildFill="True">
                 <Label>Filter: </Label>
-                <ComboBox>
+                <ComboBox x:Name="NoiceReductionComboBox" SelectionChanged="NoiceReductionComboBox_SelectionChanged">
                     <ComboBoxItem IsSelected="True">Median</ComboBoxItem>
                     <ComboBoxItem>Another</ComboBoxItem>
                 </ComboBox>
@@ -52,7 +52,7 @@
 
             <DockPanel LastChildFill="True">
                 <Label>Range: </Label>
-                <TextBox x:Name="RangeTextBox" TextChanged="RangeTextBox_TextChanged">3</TextBox>
+                <TextBox x:Name="RangeTextBox" LostFocus="RangeTextBox_LostFocus">3</TextBox>
             </DockPanel>
 
             <StackPanel>
@@ -81,7 +81,11 @@
             </StackPanel>
             
             <Button x:Name="ChooseFile" Margin="5" Click="ChooseFile_Click" >Load Image</Button>
-        
+
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="LoadConfig" Margin="5" Click="LoadConfig_Click">Load config</Button>
+                <Button x:Name="SaveConfig" Margin="5" Click="SaveConfig_Click">Save config</Button>
+            </StackPanel>
         </StackPanel>
 
         <Image x:Name="Image" Grid.Column="1"/>

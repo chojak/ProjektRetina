@@ -11,44 +11,36 @@ namespace ProjectRetina
 {
     internal class Filter
     {
-        public static int[,] matrixX = new int[,] { { 1, 2, 1, }, { 2, 4, 2, }, { 1, 2, 1, } };
-        public static int[,] gaussianMatrix;
+        private static double[,] gaussianMatrix;
 
-        private static int[,] generateGaussian(int range = 5, double sd = 1)
+        public static void generateGaussian(int range = 5, double sd = 1)
         {
-            int[,] matrix = new int[range, range];
             double[,] gaussian = new double[range, range];
-            range /= 2;
-            double total = 0;
-            double min = double.MaxValue;
-            double max = 0;
+            int newRange = range / 2;
 
-            for (int y = -range; y <= range; y++)
+            for (int y = -newRange; y <= newRange; y++)
             {
-                for (int x = -range; x <= range; x++)
+                for (int x = -newRange; x <= newRange; x++)
                 {
-                    // https://homepages.inf.ed.ac.uk/rbf/HIPR2/gsmooth.htm
-
-                    gaussian[x + range, y + range] = 1 / (2 * Math.PI * sd * sd) * Math.Pow(Math.E, -(x * x + y * y / (2 * sd * sd)));
-                    total += gaussian[x + range, y + range];
-                    min = Math.Min(min, gaussian[x + range, y + range]);
-                    max = Math.Max(max, gaussian[x + range, y + range]);
+                    gaussian[x + newRange, y + newRange] = (1 / (2 * Math.PI * sd * sd)) * Math.Exp(-(x * x + y * y) / (2 * sd * sd));
                 }
             }
-            total /= (range * range);
 
-            for (int y = -range; y <= range; y++)
-            {
-                for (int x = -range; x <= range; x++)
-                {
-                    // https://homepages.inf.ed.ac.uk/rbf/HIPR2/gsmooth.htm
+            //for (int y = 0; y < range; y++)
+            //{
+            //    string linia = "{ ";
+            //    for (int x = 0; x < range; x++)
+            //    {
+            //        // https://homepages.inf.ed.ac.uk/rbf/HIPR2/gsmooth.htm
+            //        linia += $"{gaussian[x, y]} \t\t";
+            //    }
+            //    linia += "}";
+            //    System.Diagnostics.Debug.WriteLine(linia);
+            //}
 
-                    double z = (gaussian[x + range, y + range] - min) / (max - min);
-                }
-            }
-            return matrix;
+            gaussianMatrix = gaussian;
         }
-        public static Bitmap GausFilter(Bitmap bmp)
+        public static Bitmap GaussBlurFilter(Bitmap bmp, int range = 5)
         {
             if (bmp == null)
             {
@@ -57,35 +49,45 @@ namespace ProjectRetina
 
             if (gaussianMatrix == null)
             {
-                gaussianMatrix = generateGaussian();
-                System.Diagnostics.Debug.WriteLine("nigger");
+                generateGaussian(range);
             }
-            
-            int[,] byteArray = Utility.ImageTo2DIntArray(bmp);
-            int[,] resultArray = new int[byteArray.GetLength(0), byteArray.GetLength(1)];
 
-            int range = 2;
+            int[,] inputArray = Utility.ImageTo2DIntArray(bmp);
+            int[,] resultArray = new int[inputArray.GetLength(0), inputArray.GetLength(1)];
+            range /= 2;
+            double maxdowyjebania = 0;
 
-            for (int y = 1; y < bmp.Height; y++)
+            for (int y = 0; y < inputArray.GetLength(1); y++)
             {
-                for (int x = 3; x < bmp.Width; x++)
+                for (int x = 0; x < inputArray.GetLength(0) - 2; x += 3)
                 {
-                    double magX = 0;
-
-                    for (int yy = 0; yy < 3; yy++)
+                    double total = 0;
+                    double counter = 0;
+                    int gaussYCounter = 0;
+                    for (int yy = y - range; yy <= y + range; yy++)
                     {
-                        for (int xx = 0; xx < 3; xx++)
+                        int gaussXCounter = 0;
+                        for (int xx = x - range * 3; xx <= x + range * 3; xx += 3)
                         {
-                            int xn = x + xx - 1;
-                            int yn = y + yy - 1;
-
-                            magX += byteArray[xn * 3, yn] * matrixX[xx, yy];
+                            if (xx >= 0 && xx < inputArray.GetLength(0) && yy >= 0 && yy < inputArray.GetLength(1))
+                            {
+                                total += inputArray[xx, yy] * gaussianMatrix[gaussXCounter, gaussYCounter];
+                                counter += gaussianMatrix[gaussXCounter, gaussYCounter];
+                            }
+                            gaussXCounter ++;
                         }
+                        gaussYCounter++;
                     }
 
-                    int value = (int)Math.Sqrt(magX * magX);
-                    resultArray[x, y] = resultArray[x + 1, y] = resultArray[x + 2, y] = value > 255 ? 255 : value < 0 ? 0 : value;
+                    resultArray[x, y] =
+                    resultArray[x + 1, y] =
+                    resultArray[x + 2, y] = (int)(total / counter);
 
+                    maxdowyjebania = Math.Max(maxdowyjebania, counter);
+
+                    //resultArray[x, y] =
+                    //resultArray[x + 1, y] =
+                    //resultArray[x + 2, y] = (int)(total);
                 }
             }
             return Utility.IntArrayToBitmap(resultArray);
