@@ -110,61 +110,66 @@ namespace ProjectRetina
                 Source = openFileDialog.FileName;
                 OriginalBitmap = new Bitmap(Source);
 
+                OriginalBitmap = GrayScale.Scale(OriginalBitmap, GrayScaleComboBox.SelectedIndex);
+                OriginalBitmap = Filter.GaussBlurFilter(OriginalBitmap, RangeFilters);
+                //OriginalBitmap = Filter.BoxBlurFilter(OriginalBitmap, RangeFilters);
                 Image.Source = Utility.BitmapToImageSource(OriginalBitmap);
-                MessageBox.Show("Original bitmap ");
 
-                Bitmap GrayScaleBitmap = GrayScale.Scale(OriginalBitmap, GrayScaleComboBox.SelectedIndex);
-                Image.Source = Utility.BitmapToImageSource(GrayScaleBitmap);
-                MessageBox.Show($"Grayscale for {GrayScaleComboBox.SelectedValue.ToString().Split(' ')[GrayScaleComboBox.SelectedValue.ToString().Split(' ').Length - 1]} channel");
+                //    Image.Source = Utility.BitmapToImageSource(OriginalBitmap);
+                //    MessageBox.Show("Original bitmap ");
 
-                if (BlurComboBox.SelectedIndex == 0)
-                {
-                    tmp = Filter.GaussBlurFilter(GrayScaleBitmap, RangeFilters);
-                    Image.Source = Utility.BitmapToImageSource(tmp);
-                    MessageBox.Show("Gauss blur");
-                }
-                //else
-                //{
-                //    tmp = Filter.BoxBlurFilter(GrayScaleBitmap, RangeFilters);
-                //    Image.Source = Utility.BitmapToImageSource(tmp);
-                //    MessageBox.Show("BoxBlur blur");
-                //}
+                //    Bitmap GrayScaleBitmap = GrayScale.Scale(OriginalBitmap, GrayScaleComboBox.SelectedIndex);
+                //    Image.Source = Utility.BitmapToImageSource(GrayScaleBitmap);
+                //    MessageBox.Show($"Grayscale for {GrayScaleComboBox.SelectedValue.ToString().Split(' ')[GrayScaleComboBox.SelectedValue.ToString().Split(' ').Length - 1]} channel");
 
-                FinalBitmap = Utility.ImageSubstraction(GrayScaleBitmap, tmp);
-                Image.Source = Utility.BitmapToImageSource(FinalBitmap);
-                MessageBox.Show("Image substraction");
+                //    if (BlurComboBox.SelectedIndex == 0)
+                //    {
+                //        tmp = Filter.GaussBlurFilter(GrayScaleBitmap, RangeFilters);
+                //        Image.Source = Utility.BitmapToImageSource(tmp);
+                //        MessageBox.Show("Gauss blur");
+                //    }
+                //    //else
+                //    //{
+                //    //    tmp = Filter.BoxBlurFilter(GrayScaleBitmap, RangeFilters);
+                //    //    Image.Source = Utility.BitmapToImageSource(tmp);
+                //    //    MessageBox.Show("BoxBlur blur");
+                //    //}
 
-                FinalBitmap = Binaryzation.OtsuBinarization(FinalBitmap);
-                Image.Source = Utility.BitmapToImageSource(FinalBitmap);
-                MessageBox.Show("Otsu binarization");
+                //    FinalBitmap = Utility.ImageSubstraction(GrayScaleBitmap, tmp);
+                //    Image.Source = Utility.BitmapToImageSource(FinalBitmap);
+                //    MessageBox.Show("Image substraction");
 
-                if (NoiceReductionComboBox.SelectedIndex == 0)
-                {
-                    FinalBitmap = Filter.MedianFilter(FinalBitmap, RangeFilters);
-                    Image.Source = Utility.BitmapToImageSource(FinalBitmap);
-                    MessageBox.Show("Median filter");
-                }
-                else
-                {
-                    // another filter removing noices
-                    MessageBox.Show("NIE MA XD");
-                }
+                //    FinalBitmap = Binaryzation.OtsuBinarization(FinalBitmap);
+                //    Image.Source = Utility.BitmapToImageSource(FinalBitmap);
+                //    MessageBox.Show("Otsu binarization");
 
-                if (MorphologyComboBox.SelectedIndex == 3)
-                {
-                    // max
-                    FinalBitmap = Filter.MaxMinFilter(FinalBitmap, RangeFilters, false);
-                    Image.Source = Utility.BitmapToImageSource(FinalBitmap);
-                    MessageBox.Show("Max filter");
+                //    if (NoiceReductionComboBox.SelectedIndex == 0)
+                //    {
+                //        FinalBitmap = Filter.MedianFilter(FinalBitmap, RangeFilters);
+                //        Image.Source = Utility.BitmapToImageSource(FinalBitmap);
+                //        MessageBox.Show("Median filter");
+                //    }
+                //    else
+                //    {
+                //        // another filter removing noices
+                //        MessageBox.Show("NIE MA XD");
+                //    }
 
-                }
-                else if (MorphologyComboBox.SelectedIndex == 2)
-                {
-                    // min
-                    FinalBitmap = Filter.MaxMinFilter(FinalBitmap, RangeFilters, true);
-                    Image.Source = Utility.BitmapToImageSource(FinalBitmap);
-                    MessageBox.Show("Min/Max filter");
-                }
+                //    if (MorphologyComboBox.SelectedIndex == 3)
+                //    {
+                //        // max
+                //        FinalBitmap = Filter.MaxMinFilter(FinalBitmap, RangeFilters, false);
+                //        Image.Source = Utility.BitmapToImageSource(FinalBitmap);
+                //        MessageBox.Show("Max filter");
+
+                //    }
+                //    else if (MorphologyComboBox.SelectedIndex == 2)
+                //    {
+                //        // min
+                //        FinalBitmap = Filter.MaxMinFilter(FinalBitmap, RangeFilters, true);
+                //        Image.Source = Utility.BitmapToImageSource(FinalBitmap);
+                //        MessageBox.Show("Min/Max filter");
+                //    }
             }
         }
 
@@ -279,6 +284,12 @@ namespace ProjectRetina
             {
                 if (range > 0 && range <= 50)
                 {
+                    if (range %2 == 0)
+                    {
+                        MessageBox.Show("Range value must be an odd number", "Invalid range value", MessageBoxButton.OK, MessageBoxImage.Error);
+                        RangeTextBox.Text = RangeFilters.ToString();
+                        return;
+                    }
                     RangeFilters = range;
                     Filter.generateGaussian(RangeFilters);
                 }

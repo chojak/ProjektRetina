@@ -11,12 +11,15 @@ namespace ProjectRetina
 {
     internal class Filter
     {
-        private static double[,] gaussianMatrix;
+        private static long[,] gaussianMatrix;
+        private static long gaussianTotal; 
 
-        public static void generateGaussian(int range = 5, double sd = 1)
+        public static void generateGaussian(int range = 5, double sd = 3)
         {
             double[,] gaussian = new double[range, range];
+            long[,] final = new long[range, range];
             int newRange = range / 2;
+            gaussianTotal = 0;
 
             for (int y = -newRange; y <= newRange; y++)
             {
@@ -26,21 +29,24 @@ namespace ProjectRetina
                 }
             }
 
-            //for (int y = 0; y < range; y++)
-            //{
-            //    string linia = "{ ";
-            //    for (int x = 0; x < range; x++)
-            //    {
-            //        // https://homepages.inf.ed.ac.uk/rbf/HIPR2/gsmooth.htm
-            //        linia += $"{gaussian[x, y]} \t\t";
-            //    }
-            //    linia += "}";
-            //    System.Diagnostics.Debug.WriteLine(linia);
-            //}
+            for (int y = 0; y < range; y++)
+            {
+                string linia = "{ ";
+                for (int x = 0; x < range; x++)
+                {
+                    // https://homepages.inf.ed.ac.uk/rbf/HIPR2/gsmooth.htm
+                    final[x, y] = (int)(gaussian[x, y] / gaussian[0, 0]);
+                    linia += $"{final[x, y]} \t\t";
+                    gaussianTotal += final[x, y];
+                }
+                linia += "}";
+                System.Diagnostics.Debug.WriteLine(linia);
+            }
+            System.Diagnostics.Debug.WriteLine(gaussianTotal);
 
-            gaussianMatrix = gaussian;
+            gaussianMatrix = final;
         }
-        public static Bitmap GaussBlurFilter(Bitmap bmp, int range = 5)
+        public static Bitmap GaussBlurFilter(Bitmap bmp, int range)
         {
             if (bmp == null)
             {
@@ -55,14 +61,13 @@ namespace ProjectRetina
             int[,] inputArray = Utility.ImageTo2DIntArray(bmp);
             int[,] resultArray = new int[inputArray.GetLength(0), inputArray.GetLength(1)];
             range /= 2;
-            double maxdowyjebania = 0;
 
             for (int y = 0; y < inputArray.GetLength(1); y++)
             {
-                for (int x = 0; x < inputArray.GetLength(0) - 2; x += 3)
+                for (int x = 0; x < inputArray.GetLength(0); x += 3)
                 {
-                    double total = 0;
-                    double counter = 0;
+                    long total = 0;
+                    long counter = 0;
                     int gaussYCounter = 0;
                     for (int yy = y - range; yy <= y + range; yy++)
                     {
@@ -82,8 +87,8 @@ namespace ProjectRetina
                     resultArray[x, y] =
                     resultArray[x + 1, y] =
                     resultArray[x + 2, y] = (int)(total / counter);
+                    //resultArray[x + 2, y] = (int)(total / gaussianTotal);
 
-                    maxdowyjebania = Math.Max(maxdowyjebania, counter);
 
                     //resultArray[x, y] =
                     //resultArray[x + 1, y] =
@@ -93,7 +98,7 @@ namespace ProjectRetina
             return Utility.IntArrayToBitmap(resultArray);
         }
 
-        public static Bitmap BoxBlurFilter(Bitmap bmp, int range = 3)
+        public static Bitmap BoxBlurFilter(Bitmap bmp, int range)
         {
             if (bmp == null)
             {
@@ -110,7 +115,6 @@ namespace ProjectRetina
                 {
                     double total = 0;
                     int counter = 0;
-
                     for (int yy = y - range; yy <= y + range; yy++)
                     {
                         for (int xx = x - range * 3; xx <= x + range * 3; xx += 3)
