@@ -108,64 +108,85 @@ namespace ProjectRetina
             if (openFileDialog.ShowDialog() == true)
             {
                 Source = openFileDialog.FileName;
-                OriginalBitmap = new Bitmap(Source);
+                TransformImageWithMessages(Source);
+            }
+        }
 
-                Image.Source = Utility.BitmapToImageSource(OriginalBitmap);
-                MessageBox.Show("Original bitmap ");
+        private void ReloadFile_Click(object sender, RoutedEventArgs e)
+        {
+            TransformImageWithMessages(Source);
+        }
 
+        private void TransformImageWithMessages(string path)
+        {
+            OriginalBitmap = new Bitmap(Source);
 
-                Bitmap GrayScaleBitmap = GrayScale.Scale(OriginalBitmap, GrayScaleComboBox.SelectedIndex);
-                Image.Source = Utility.BitmapToImageSource(GrayScaleBitmap);
-                MessageBox.Show($"Grayscale for {GrayScaleComboBox.SelectedValue.ToString().Split(' ')[GrayScaleComboBox.SelectedValue.ToString().Split(' ').Length - 1]} channel");
+            Image.Source = Utility.BitmapToImageSource(OriginalBitmap);
+            MessageBox.Show("Original bitmap ");
 
-                if (BlurComboBox.SelectedIndex == 0)
-                {
-                    tmp = Filter.GaussBlurFilter(GrayScaleBitmap, RangeFilters);
-                    Image.Source = Utility.BitmapToImageSource(tmp);
-                    MessageBox.Show("Gauss blur");
-                }
-                else
-                {
-                    tmp = Filter.BoxBlurFilter(GrayScaleBitmap, RangeFilters);
-                    Image.Source = Utility.BitmapToImageSource(tmp);
-                    MessageBox.Show("BoxBlur blur");
-                }
+            Bitmap GrayScaleBitmap = GrayScale.Scale(OriginalBitmap, GrayScaleComboBox.SelectedIndex);
+            Image.Source = Utility.BitmapToImageSource(GrayScaleBitmap);
+            MessageBox.Show($"Grayscale for {GrayScaleComboBox.SelectedValue.ToString().Split(' ')[GrayScaleComboBox.SelectedValue.ToString().Split(' ').Length - 1]} channel");
 
-                FinalBitmap = Utility.ImageSubstraction(GrayScaleBitmap, tmp);
+            if (BlurOption == 0)
+            {
+                tmp = Filter.GaussBlurFilter(GrayScaleBitmap, RangeFilters);
+                Image.Source = Utility.BitmapToImageSource(tmp);
+                MessageBox.Show("Gauss blur");
+            }
+            else
+            {
+                tmp = Filter.BoxBlurFilter(GrayScaleBitmap, RangeFilters);
+                Image.Source = Utility.BitmapToImageSource(tmp);
+                MessageBox.Show("BoxBlur blur");
+            }
+
+            FinalBitmap = Utility.ImageSubstraction(GrayScaleBitmap, tmp);
+            Image.Source = Utility.BitmapToImageSource(FinalBitmap);
+            MessageBox.Show("Image substraction");
+
+            FinalBitmap = Binaryzation.OtsuBinarization(FinalBitmap);
+            Image.Source = Utility.BitmapToImageSource(FinalBitmap);
+            MessageBox.Show("Otsu binarization");
+
+            if (NoiceReductionOption == 0)
+            {
+                FinalBitmap = Filter.MedianFilter(FinalBitmap, RangeFilters);
                 Image.Source = Utility.BitmapToImageSource(FinalBitmap);
-                MessageBox.Show("Image substraction");
+                MessageBox.Show("Median filter");
+            }
+            else
+            {
+                // another filter removing noices
+                MessageBox.Show("NIE MA XD");
+            }
 
-                FinalBitmap = Binaryzation.OtsuBinarization(FinalBitmap);
+            if (MorphologicalOption == 3)
+            {
+                // max
+                FinalBitmap = Filter.MaxMinFilter(FinalBitmap, RangeFilters, false);
                 Image.Source = Utility.BitmapToImageSource(FinalBitmap);
-                MessageBox.Show("Otsu binarization");
+                MessageBox.Show("Max filter");
 
-                if (NoiceReductionComboBox.SelectedIndex == 0)
-                {
-                    FinalBitmap = Filter.MedianFilter(FinalBitmap, RangeFilters);
-                    Image.Source = Utility.BitmapToImageSource(FinalBitmap);
-                    MessageBox.Show("Median filter");
-                }
-                else
-                {
-                    // another filter removing noices
-                    MessageBox.Show("NIE MA XD");
-                }
-
-                if (MorphologyComboBox.SelectedIndex == 3)
-                {
-                    // max
-                    FinalBitmap = Filter.MaxMinFilter(FinalBitmap, RangeFilters, false);
-                    Image.Source = Utility.BitmapToImageSource(FinalBitmap);
-                    MessageBox.Show("Max filter");
-
-                }
-                else if (MorphologyComboBox.SelectedIndex == 2)
-                {
-                    // min
-                    FinalBitmap = Filter.MaxMinFilter(FinalBitmap, RangeFilters, true);
-                    Image.Source = Utility.BitmapToImageSource(FinalBitmap);
-                    MessageBox.Show("Min/Max filter");
-                }
+            }
+            else if (MorphologicalOption == 2)
+            {
+                // min
+                FinalBitmap = Filter.MaxMinFilter(FinalBitmap, RangeFilters, true);
+                Image.Source = Utility.BitmapToImageSource(FinalBitmap);
+                MessageBox.Show("Min/Max filter");
+            }
+            else if (MorphologicalOption == 0)
+            {
+                FinalBitmap = Filter.ErosionDilationFilter(FinalBitmap, RangeFilters, false);
+                Image.Source = Utility.BitmapToImageSource(FinalBitmap);
+                MessageBox.Show("Erosion filter");
+            }
+            else if (MorphologicalOption == 1)
+            {
+                FinalBitmap = Filter.ErosionDilationFilter(FinalBitmap, RangeFilters, true);
+                Image.Source = Utility.BitmapToImageSource(FinalBitmap);
+                MessageBox.Show("Dilation filter");
             }
         }
 
@@ -194,6 +215,10 @@ namespace ProjectRetina
                 FinalBitmap = Filter.MaxMinFilter(FinalBitmap, RangeFilters, false); // max
             else if (MorphologicalOption == 2)
                 FinalBitmap = Filter.MaxMinFilter(FinalBitmap, RangeFilters, true);  // min
+            else if (MorphologicalOption == 0)
+                FinalBitmap = Filter.ErosionDilationFilter(FinalBitmap, RangeFilters, false);  // erosion
+            else if (MorphologicalOption == 1) 
+                FinalBitmap = Filter.ErosionDilationFilter(FinalBitmap, RangeFilters, true);   // dilation
 
             return FinalBitmap; 
         }

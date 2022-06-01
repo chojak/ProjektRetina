@@ -53,6 +53,7 @@ namespace ProjectRetina
 
             gaussianMatrix = final;
         }
+
         public static Bitmap GaussBlurFilter(Bitmap bmp, int range)
         {
             if (bmp == null)
@@ -178,6 +179,51 @@ namespace ProjectRetina
                     resultArray[x + 2, y] = tmp;
                 }
             }
+            return Utility.IntArrayToBitmap(resultArray);
+        }
+
+        public static Bitmap ErosionDilationFilter(Bitmap bmp, int range = 3, bool isDilation = false)
+        {
+            if (bmp == null)
+            {
+                return new Bitmap(1, 1);
+            }
+
+            int[,] inputArray = Utility.ImageTo2DIntArray(bmp);
+            int[,] resultArray = Utility.ImageTo2DIntArray(bmp);
+            range /= 2;
+
+            for (int y = 1; y < inputArray.GetLength(1) - 1; y++)
+            {
+                for (int x = 3; x < inputArray.GetLength(0) - 3; x += 3)
+                {
+                    int topNeighbour = inputArray[x, y - 1];
+                    int botNeighbour = inputArray[x, y + 1];
+                    int leftNeighbour = inputArray[x - 3, y];
+                    int rightNeighbour = inputArray[x + 3, y];
+                    int total = topNeighbour + botNeighbour + leftNeighbour + rightNeighbour;
+
+                    if (!isDilation)
+                    {
+                        if (inputArray[x, y] == 255 && total != 255 * 4)
+                        {
+                            resultArray[x, y] =
+                            resultArray[x + 1, y] =
+                            resultArray[x + 2, y] = 0;
+                        }
+                    }
+                    else if (isDilation)
+                    {
+                        if (inputArray[x, y] == 0 && total > 0)
+                        {
+                            resultArray[x, y] =
+                            resultArray[x + 1, y] =
+                            resultArray[x + 2, y] = 255;
+                        }
+                    }
+                }
+            }
+
             return Utility.IntArrayToBitmap(resultArray);
         }
 

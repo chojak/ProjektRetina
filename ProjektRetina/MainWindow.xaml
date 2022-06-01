@@ -43,8 +43,8 @@
             <DockPanel LastChildFill="True">
                 <Label>Morphology: </Label>
                 <ComboBox x:Name="MorphologyComboBox" SelectionChanged="MorphologyComboBox_SelectionChanged">
-                    <ComboBoxItem>Zamkniety</ComboBoxItem>
-                    <ComboBoxItem>Domkniety</ComboBoxItem>
+                    <ComboBoxItem>Erosion</ComboBoxItem>
+                    <ComboBoxItem>Dilation</ComboBoxItem>
                     <ComboBoxItem>Min</ComboBoxItem>
                     <ComboBoxItem IsSelected="True">Max</ComboBoxItem> 
                 </ComboBox>
@@ -79,8 +79,11 @@
                 <Label>Progress: </Label>
                 <TextBlock x:Name="ProgressTextBlock"></TextBlock>
             </StackPanel>
-            
-            <Button x:Name="ChooseFile" Margin="5" Click="ChooseFile_Click" >Load Image</Button>
+
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="ChooseFile" Margin="5" Click="ChooseFile_Click" >Load Image</Button>
+                <Button x:Name="ReloadFile" Margin="5" Click="ReloadFile_Click">Reload</Button>
+            </StackPanel>
 
             <StackPanel Orientation="Horizontal">
                 <Button x:Name="LoadConfig" Margin="5" Click="LoadConfig_Click">Load config</Button>
