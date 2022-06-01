@@ -110,66 +110,62 @@ namespace ProjectRetina
                 Source = openFileDialog.FileName;
                 OriginalBitmap = new Bitmap(Source);
 
-                OriginalBitmap = GrayScale.Scale(OriginalBitmap, GrayScaleComboBox.SelectedIndex);
-                OriginalBitmap = Filter.GaussBlurFilter(OriginalBitmap, RangeFilters);
-                //OriginalBitmap = Filter.BoxBlurFilter(OriginalBitmap, RangeFilters);
                 Image.Source = Utility.BitmapToImageSource(OriginalBitmap);
+                MessageBox.Show("Original bitmap ");
 
-                //    Image.Source = Utility.BitmapToImageSource(OriginalBitmap);
-                //    MessageBox.Show("Original bitmap ");
 
-                //    Bitmap GrayScaleBitmap = GrayScale.Scale(OriginalBitmap, GrayScaleComboBox.SelectedIndex);
-                //    Image.Source = Utility.BitmapToImageSource(GrayScaleBitmap);
-                //    MessageBox.Show($"Grayscale for {GrayScaleComboBox.SelectedValue.ToString().Split(' ')[GrayScaleComboBox.SelectedValue.ToString().Split(' ').Length - 1]} channel");
+                Bitmap GrayScaleBitmap = GrayScale.Scale(OriginalBitmap, GrayScaleComboBox.SelectedIndex);
+                Image.Source = Utility.BitmapToImageSource(GrayScaleBitmap);
+                MessageBox.Show($"Grayscale for {GrayScaleComboBox.SelectedValue.ToString().Split(' ')[GrayScaleComboBox.SelectedValue.ToString().Split(' ').Length - 1]} channel");
 
-                //    if (BlurComboBox.SelectedIndex == 0)
-                //    {
-                //        tmp = Filter.GaussBlurFilter(GrayScaleBitmap, RangeFilters);
-                //        Image.Source = Utility.BitmapToImageSource(tmp);
-                //        MessageBox.Show("Gauss blur");
-                //    }
-                //    //else
-                //    //{
-                //    //    tmp = Filter.BoxBlurFilter(GrayScaleBitmap, RangeFilters);
-                //    //    Image.Source = Utility.BitmapToImageSource(tmp);
-                //    //    MessageBox.Show("BoxBlur blur");
-                //    //}
+                if (BlurComboBox.SelectedIndex == 0)
+                {
+                    tmp = Filter.GaussBlurFilter(GrayScaleBitmap, RangeFilters);
+                    Image.Source = Utility.BitmapToImageSource(tmp);
+                    MessageBox.Show("Gauss blur");
+                }
+                else
+                {
+                    tmp = Filter.BoxBlurFilter(GrayScaleBitmap, RangeFilters);
+                    Image.Source = Utility.BitmapToImageSource(tmp);
+                    MessageBox.Show("BoxBlur blur");
+                }
 
-                //    FinalBitmap = Utility.ImageSubstraction(GrayScaleBitmap, tmp);
-                //    Image.Source = Utility.BitmapToImageSource(FinalBitmap);
-                //    MessageBox.Show("Image substraction");
+                FinalBitmap = Utility.ImageSubstraction(GrayScaleBitmap, tmp);
+                Image.Source = Utility.BitmapToImageSource(FinalBitmap);
+                MessageBox.Show("Image substraction");
 
-                //    FinalBitmap = Binaryzation.OtsuBinarization(FinalBitmap);
-                //    Image.Source = Utility.BitmapToImageSource(FinalBitmap);
-                //    MessageBox.Show("Otsu binarization");
+                FinalBitmap = Binaryzation.OtsuBinarization(FinalBitmap);
+                Image.Source = Utility.BitmapToImageSource(FinalBitmap);
+                MessageBox.Show("Otsu binarization");
 
-                //    if (NoiceReductionComboBox.SelectedIndex == 0)
-                //    {
-                //        FinalBitmap = Filter.MedianFilter(FinalBitmap, RangeFilters);
-                //        Image.Source = Utility.BitmapToImageSource(FinalBitmap);
-                //        MessageBox.Show("Median filter");
-                //    }
-                //    else
-                //    {
-                //        // another filter removing noices
-                //        MessageBox.Show("NIE MA XD");
-                //    }
+                if (NoiceReductionComboBox.SelectedIndex == 0)
+                {
+                    FinalBitmap = Filter.MedianFilter(FinalBitmap, RangeFilters);
+                    Image.Source = Utility.BitmapToImageSource(FinalBitmap);
+                    MessageBox.Show("Median filter");
+                }
+                else
+                {
+                    // another filter removing noices
+                    MessageBox.Show("NIE MA XD");
+                }
 
-                //    if (MorphologyComboBox.SelectedIndex == 3)
-                //    {
-                //        // max
-                //        FinalBitmap = Filter.MaxMinFilter(FinalBitmap, RangeFilters, false);
-                //        Image.Source = Utility.BitmapToImageSource(FinalBitmap);
-                //        MessageBox.Show("Max filter");
+                if (MorphologyComboBox.SelectedIndex == 3)
+                {
+                    // max
+                    FinalBitmap = Filter.MaxMinFilter(FinalBitmap, RangeFilters, false);
+                    Image.Source = Utility.BitmapToImageSource(FinalBitmap);
+                    MessageBox.Show("Max filter");
 
-                //    }
-                //    else if (MorphologyComboBox.SelectedIndex == 2)
-                //    {
-                //        // min
-                //        FinalBitmap = Filter.MaxMinFilter(FinalBitmap, RangeFilters, true);
-                //        Image.Source = Utility.BitmapToImageSource(FinalBitmap);
-                //        MessageBox.Show("Min/Max filter");
-                //    }
+                }
+                else if (MorphologyComboBox.SelectedIndex == 2)
+                {
+                    // min
+                    FinalBitmap = Filter.MaxMinFilter(FinalBitmap, RangeFilters, true);
+                    Image.Source = Utility.BitmapToImageSource(FinalBitmap);
+                    MessageBox.Show("Min/Max filter");
+                }
             }
         }
 

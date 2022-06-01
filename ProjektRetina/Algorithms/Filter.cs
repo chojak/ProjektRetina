@@ -11,14 +11,20 @@ namespace ProjectRetina
 {
     internal class Filter
     {
-        private static long[,] gaussianMatrix;
-        private static long gaussianTotal; 
+        private static int[,] gaussianMatrix;
+        private static int gaussianTotal; 
 
-        public static void generateGaussian(int range = 5, double sd = 3)
+        public static void generateGaussian(int range = 5, double sd = 0.8)
         {
             double[,] gaussian = new double[range, range];
-            long[,] final = new long[range, range];
+            int[,] final = new int[range, range];
             int newRange = range / 2;
+            double RANGE = (double)range;
+
+            if (range == 3)
+                sd = 0.8;
+            else
+                sd = -0.00743902 * Math.Pow(RANGE, 2) + 0.3094634 * RANGE - 0.205049;
             gaussianTotal = 0;
 
             for (int y = -newRange; y <= newRange; y++)
@@ -43,6 +49,7 @@ namespace ProjectRetina
                 System.Diagnostics.Debug.WriteLine(linia);
             }
             System.Diagnostics.Debug.WriteLine(gaussianTotal);
+            System.Diagnostics.Debug.WriteLine("sd: " + sd);
 
             gaussianMatrix = final;
         }
