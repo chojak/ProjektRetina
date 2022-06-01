@@ -61,7 +61,7 @@ namespace ProjectRetina
                 return new Bitmap(1, 1);
             }
 
-            if (gaussianMatrix == null)
+            if (gaussianMatrix == null || gaussianMatrix.Length != range * range)
             {
                 generateGaussian(range);
             }
@@ -69,7 +69,7 @@ namespace ProjectRetina
             int[,] inputArray = Utility.ImageTo2DIntArray(bmp);
             int[,] resultArray = new int[inputArray.GetLength(0), inputArray.GetLength(1)];
             range /= 2;
-
+            
             for (int y = 0; y < inputArray.GetLength(1); y++)
             {
                 for (int x = 0; x < inputArray.GetLength(0); x += 3)

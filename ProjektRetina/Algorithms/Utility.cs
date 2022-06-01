@@ -157,18 +157,19 @@ namespace ProjectRetina.Algorithms
             return IntArrayToBitmap(originalArray);
         }
 
-        public static void SaveConfig(int GrayscaleOption, int BlurOption, int RangeFilters, int NoiceReductionOption, int MorphologicalOption)
+        public static void SaveConfig(int GrayscaleOption, int BlurOption, int NoiceReductionOption, int MorphologicalOption, int BlurRange, int NoiceRange, int MorphologicalRange)
         {
-            Options options = new Options(GrayscaleOption, BlurOption, RangeFilters, NoiceReductionOption, MorphologicalOption);
+            Options options = new Options(GrayscaleOption, BlurOption, NoiceReductionOption, MorphologicalOption, BlurRange, NoiceRange, MorphologicalRange);
             string json = JsonConvert.SerializeObject(options);
 
-            System.Windows.Forms.FolderBrowserDialog folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
-            var result = folderBrowserDialog.ShowDialog();
+            System.Windows.Forms.SaveFileDialog saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            saveFileDialog.Filter = "JSON file (*.json)| *.json";
+            var result = saveFileDialog.ShowDialog();
             if (result == System.Windows.Forms.DialogResult.OK)
             {
-                if (Directory.Exists(folderBrowserDialog.SelectedPath))
+                if (saveFileDialog.CheckPathExists)
                 {
-                    File.WriteAllText($"{folderBrowserDialog.SelectedPath}/retina_config.json", json);
+                    File.WriteAllText($"{saveFileDialog.FileName}", json);
                 }
                 else
                 {
