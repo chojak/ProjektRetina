@@ -86,6 +86,7 @@
             <StackPanel Orientation="Horizontal">
                 <Button x:Name="ChooseFile" Margin="5" Click="ChooseFile_Click" >Load Image</Button>
                 <Button x:Name="ReloadFile" Margin="5" Click="ReloadFile_Click">Reload</Button>
+                <Button x:Name="SaveFile" Margin="5" Click="SaveFile_Click">Save Image</Button>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">

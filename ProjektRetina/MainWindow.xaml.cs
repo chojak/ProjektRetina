@@ -249,6 +249,14 @@ namespace ProjectRetina
             TransformImageWithMessages(Source);
         }
 
+        private void SaveFile_Click(object sender, RoutedEventArgs e)
+        {
+            if (FinalBitmap != null)
+            {
+                Utility.SaveImage(FinalBitmap);
+            }
+        }
+
         private void SourceFolderButton_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.FolderBrowserDialog folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
@@ -345,8 +353,6 @@ namespace ProjectRetina
                 MessageBox.Show("Range value can be only integer", "Invalid range value", MessageBoxButton.OK, MessageBoxImage.Error);
                 tb.Text = "0";
             }
-
-            
         }
 
         private void MorphologyComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

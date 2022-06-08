@@ -179,5 +179,25 @@ namespace ProjectRetina.Algorithms
             }
         }
 
+        public static void SaveImage(Bitmap bmp)
+        {
+            System.Windows.Forms.SaveFileDialog saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            saveFileDialog.Filter = "JPG file (*.jpg)| *.jpg";
+
+            var result = saveFileDialog.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                if (saveFileDialog.CheckPathExists)
+                {
+                    bmp.Save(saveFileDialog.FileName);
+                }
+                else
+                {
+                    MessageBox.Show("Something went wrong", "Alert");
+                    return;
+                }
+            }
+        }
+
     }
 }

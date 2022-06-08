@@ -38,6 +38,7 @@ namespace ProjectRetina.Algorithms
 
             return histogram.Select(d => (int)d).ToArray();
         }
+      
         private static byte Otsu(Bitmap bmp)
         {
             // https://www.programmerall.com/article/1106135802/
